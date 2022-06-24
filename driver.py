@@ -6,8 +6,8 @@ from models.users.users import Users
 mirthConfig = {
     "instanceName": "18.208.106.238",
     "credentials": {
-        "username": "clayton", 
-        "password": "Cl@yton1234"
+        "username": "admin", 
+        "password": "admin"
     }
 }
 
