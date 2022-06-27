@@ -1,5 +1,7 @@
 import requests
-
+from models.channels.channels import Channels
+from models.codeTemplates.codeTemplates import CodeTemplates
+from models.events.events import Events
 from models.users.users import Users
 
 
@@ -38,7 +40,7 @@ class MirthService:
         return Users(users.content)
 
     # Event Calls
-    def getEvents(self, params):
+    def getEvents(self, params = {}):
 
         parameters = []
         for key,value in params.items():
@@ -48,7 +50,33 @@ class MirthService:
 
         events = requests.get(f"{self.apiUrl}/events" + encParam, headers={'X-Requested-With': 'XMLHttpRequest'}, cookies={'JSESSIONID': self.jsessionId}, verify=False)
 
-        print(events)
+        return Events(events.content)
+
+    # Channel Calls
+    def getChannels(self, params = {}):
+        
+        parameters = []
+        for key,value in params.items():
+            parameters.append(f"{key}={value}")
+
+        encParam = '?' + '&'.join(parameters)
+
+        events = requests.get(f"{self.apiUrl}/channels" + encParam, headers={'X-Requested-With': 'XMLHttpRequest'}, cookies={'JSESSIONID': self.jsessionId}, verify=False)
+
+        return Channels(events.content)
+
+    # Code Template Calls
+    def getCodeTemplates(self, params = {}):
+        
+        parameters = []
+        for key,value in params.items():
+            parameters.append(f"{key}={value}")
+
+        encParam = '?' + '&'.join(parameters)
+
+        events = requests.get(f"{self.apiUrl}/codeTemplates" + encParam, headers={'X-Requested-With': 'XMLHttpRequest'}, cookies={'JSESSIONID': self.jsessionId}, verify=False)
+
+        return CodeTemplates(events.content)
 
 
 
