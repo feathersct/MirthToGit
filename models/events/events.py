@@ -1,9 +1,12 @@
 import xml.etree.ElementTree as ET
 from models.events.event import Event
+from models.mirthElement import MirthElement
 
-class Events:
+class Events(MirthElement):
     def __init__(self, listXML):
-        events = ET.fromstring(listXML)
+        MirthElement.__init__(self, listXML)
+
+        events = self.root
         self.events = []
 
         for e in events.findall('./event'):

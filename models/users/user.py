@@ -1,11 +1,16 @@
-class User:
-    def __init__(self, userXml):
-        self.id = userXml.find('id').text
-        self.username = userXml.find('username').text
-        self.email = userXml.find('email').text
-        self.firstName = userXml.find('firstName').text
-        self.lastName = userXml.find('lastName').text
-        self.organization = userXml.find('organization').text
-        self.description = userXml.find('description').text
-        self.phoneNumber = userXml.find('phoneNumber').text
-        self.strikeCount = userXml.find('strikeCount').text
+from models.mirthElement import MirthElement
+
+
+class User(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.id = self.root.find('id').text
+        self.username = self.root.find('username').text
+        self.email = self.root.find('email').text
+        self.firstName = self.root.find('firstName').text
+        self.lastName = self.root.find('lastName').text
+        self.organization = self.root.find('organization').text
+        self.description = self.root.find('description').text
+        self.phoneNumber = self.root.find('phoneNumber').text
+        self.strikeCount = self.root.find('strikeCount').text

@@ -1,9 +1,11 @@
 import xml.etree.ElementTree as ET
+from models.mirthElement import MirthElement
 from models.users.user import User
 
-class Users:
+class Users(MirthElement):
     def __init__(self, userListXml):
-        users = ET.fromstring(userListXml)
+        MirthElement.__init__(self, userListXml)
+        users = self.root
         self.users = []
 
         for u in users.findall('./user'):

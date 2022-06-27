@@ -1,19 +1,25 @@
-class Channel:
+from models.mirthElement import MirthElement
+
+
+class Channel(MirthElement):
     def __init__(self, uXml):
-        self.id = uXml.find('id').text
-        self.nextMetaDataId = uXml.find('nextMetaDataId').text
-        self.description = uXml.find('description').text
-        self.name = uXml.find('name').text
-        self.revision = uXml.find('revision').text
+        MirthElement.__init__(self, uXml)
+
+        self.id = self.root.find('id').text
+        self.nextMetaDataId = self.root.find('nextMetaDataId').text
+        self.description = self.root.find('description').text
+        self.name = self.root.find('name').text
+        self.revision = self.root.find('revision').text
 
         #TODO: convert to class
-        self.sourceConnector = uXml.find('sourceConnector')
-        self.preprocessingScript = uXml.find('preprocessingScript')
-        self.postprocessingScript = uXml.find('postprocessingScript')
-        self.deployScript = uXml.find('deployScript')
-        self.undeployScript = uXml.find('undeployScript')
-        self.properties = uXml.find('properties')
+        self.sourceConnector = self.root.find('sourceConnector')
+        self.preprocessingScript = self.root.find('preprocessingScript')
+        self.postprocessingScript = self.root.find('postprocessingScript')
+        self.deployScript = self.root.find('deployScript')
+        self.undeployScript = self.root.find('undeployScript')
+        self.properties = self.root.find('properties')
+        # self.root = self.root
 
         self.destinationConnectors = []
-        for c in uXml.findall('./destinationConnectors/connector'):
+        for c in self.root.findall('./destinationConnectors/connector'):
             self.destinationConnectors.append(c)

@@ -2,6 +2,7 @@ import requests
 from models.channels.channels import Channels
 from models.codeTemplates.codeTemplates import CodeTemplates
 from models.events.events import Events
+from models.users.user import User
 from models.users.users import Users
 
 
@@ -39,6 +40,11 @@ class MirthService:
 
         return Users(users.content)
 
+    def getUser(self, userIdOrName) -> User:
+        users = requests.get(f"{self.apiUrl}/users/{userIdOrName}", headers={'X-Requested-With': 'XMLHttpRequest'}, cookies={'JSESSIONID': self.jsessionId}, verify=False)
+
+        return User(users.content)
+
     # Event Calls
     def getEvents(self, params = {}):
 
@@ -66,7 +72,7 @@ class MirthService:
         return Channels(events.content)
 
     # Code Template Calls
-    def getCodeTemplates(self, params = {}):
+    def getCodeTemplates(self, params = {}) -> CodeTemplates:
         
         parameters = []
         for key,value in params.items():

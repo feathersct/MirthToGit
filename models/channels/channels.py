@@ -1,9 +1,12 @@
 import xml.etree.ElementTree as ET
 from models.channels.channel import Channel
+from models.mirthElement import MirthElement
 
-class Channels:
+class Channels(MirthElement):
     def __init__(self, listXML):
-        channels = ET.fromstring(listXML)
+        MirthElement.__init__(self, listXML)
+
+        channels = self.root
         self.channels = []
 
         for c in channels.findall('./channel'):
