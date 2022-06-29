@@ -7,7 +7,7 @@ from models.users.users import Users
 
 
 class MirthService:
-    apiUrl = "";
+    apiUrl = ""
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'X-Requested-With': 'XMLHttpRequest'
@@ -26,16 +26,25 @@ class MirthService:
     def initialize(self, login=False):
         self.apiUrl = f"https://{self.instance}:8443/api"
 
-        if(login):
-            self.login()
+    def open(self):
+        self.login()
+    
+    def close(self):
+        if self.jsessionId != None:
+            self.logout()
 
     # User Calls
     def login(self):
         x = requests.post(f"{self.apiUrl}/users/_login?username={self.credentials.get('username')}&password={self.credentials.get('password')}", verify=False, headers=self.headers)
 
         self.jsessionId = x.cookies.get('JSESSIONID')
+    
+    def logout(self):
+        x = requests.post(f"{self.apiUrl}/users/_logout", headers={'X-Requested-With': 'XMLHttpRequest'}, cookies={'JSESSIONID': self.jsessionId}, verify=False)
 
-    def getUsers(self):
+        self.jsessionId = None
+
+    def getUsers(self) -> Users:
         users = requests.get(f"{self.apiUrl}/users", headers={'X-Requested-With': 'XMLHttpRequest'}, cookies={'JSESSIONID': self.jsessionId}, verify=False)
 
         return Users(users.content)
@@ -46,7 +55,7 @@ class MirthService:
         return User(users.content)
 
     # Event Calls
-    def getEvents(self, params = {}):
+    def getEvents(self, params = {}) -> Events:
 
         parameters = []
         for key,value in params.items():

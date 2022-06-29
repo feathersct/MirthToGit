@@ -1,3 +1,4 @@
+from models.channels.connector import Connector
 from models.mirthElement import MirthElement
 
 
@@ -12,7 +13,7 @@ class Channel(MirthElement):
         self.revision = self.root.find('revision').text
 
         #TODO: convert to class
-        self.sourceConnector = self.root.find('sourceConnector')
+        self.sourceConnector = Connector(self.root.find('sourceConnector'))
         self.preprocessingScript = self.root.find('preprocessingScript')
         self.postprocessingScript = self.root.find('postprocessingScript')
         self.deployScript = self.root.find('deployScript')

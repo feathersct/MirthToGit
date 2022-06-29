@@ -5,15 +5,15 @@ class Event(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
 
-        self.id = self.root.find('id').text
-        self.dateTime = self.root.find('dateTime').text
-        self.eventTime = self.root.find('./eventTime/time').text
-        self.level = self.root.find('level').text
-        self.name = self.root.find('name').text
-        self.outcome = self.root.find('outcome').text
-        self.userId = self.root.find('userId').text
-        self.ipAddress = self.root.find('ipAddress').text if self.root.find('ipAddress') != None else None
-        self.serverId = self.root.find('serverId').text
+        self.id = self.getSafeText('id')
+        self.dateTime = self.getSafeText('dateTime')
+        self.eventTime = self.getSafeText('./eventTime/time')
+        self.level = self.getSafeText('level')
+        self.name = self.getSafeText('name')
+        self.outcome = self.getSafeText('outcome')
+        self.userId = self.getSafeText('userId')
+        self.ipAddress = self.getSafeText('ipAddress') #self.root.find('ipAddress').text if self.root.find('ipAddress') != None else None
+        self.serverId = self.getSafeText('serverId')
         # self.root = uXml
 
         self.attributes = []
