@@ -1,5 +1,8 @@
 from typing import Type
 from models.mirthElement import MirthElement
+from models.properties.httpAuthProperties import *
+from models.properties.receiverProperties import *
+from models.properties.schemeProperties import *
 
 
 class Connector(MirthElement):
@@ -33,111 +36,6 @@ class ConnectorPluginProperties(MirthElement):
         MirthElement.__init__(self, uXml)
     
         self.name = self.getSafeText('name')
-
- 
-class VmReceiverProperties(ConnectorProperties):
-    def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
-
-        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
-
-class DICOMReceiverProperties(ConnectorProperties):
-    def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
-
-        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
-        self.listenerConnectorProperties = ListenerConnectorProperties(self.root.find('listenerConnectorProperties'))
-        self.soCloseDelay =  self.getSafeText("soCloseDelay")
-        self.releaseTo =  self.getSafeText("releaseTo")
-        self.requestTo = self.getSafeText("requestTo")
-        self.idleTo =  self.getSafeText("idleTo") 
-        self.reaper =  self.getSafeText("reaper")
-        self.rspDelay =  self.getSafeText("rspDelay")
-        self.pdv1 =  self.getSafeText("pdv1")
-        self.sndpdulen =  self.getSafeText("sndpdulen")
-        self.rcvpdulen =  self.getSafeText("rcvpdulen") 
-        self.asyncc =  self.getSafeText("async")
-        self.bigEndian = self.getSafeText("bigEndian")
-        self.bufSize =  self.getSafeText("bufSize")
-        self.defts =  self.getSafeText("defts")
-        self.dest =  self.getSafeText("dest") 
-        self.nativeData = self.getSafeText("nativeData")
-        self.sorcvbuf =  self.getSafeText("sorcvbuf")
-        self.sosndbuf =  self.getSafeText("sosndbuf")
-        self.tcpDelay =  self.getSafeText("tcpDelay")
-        self.keyPW =  self.getSafeText("keyPW")
-        self.keyStore =  self.getSafeText("keyStore")
-        self.keyStorePW =  self.getSafeText("keyStorePW")
-        self.noClientAuth =  self.getSafeText("noClientAuth")
-        self.nossl2 =  self.getSafeText("nossl2")
-        self.tls =  self.getSafeText("tls")
-        self.trustStore =  self.getSafeText("trustStore")
-        self.trustStorePW =  self.getSafeText("trustStorePW")
-        self.applicationEntity =  self.getSafeText("applicationEntity")
-        self.localHost =  self.getSafeText("localHost")
-        self.localPort =  self.getSafeText("localPort") 
-        self.localApplicationEntity =  self.getSafeText("localApplicationEntity")
-
-class DatabaseReceiverProperties(ConnectorProperties):
-    def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
-
-        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
-        self.pollConnectorProperties = PollConnectorProperties(self.root.find('pollConnectorProperties'))
-        self.driver = self.getSafeText("driver")
-        self.url = self.getSafeText("url")
-        self.username = self.getSafeText("username")
-        self.password = self.getSafeText("password")
-        self.select = self.getSafeText("select")
-        self.update = self.getSafeText("update")
-        self.useScript = self.getSafeText("useScript")
-        self.aggregateResults = self.getSafeText("aggregateResults")
-        self.cacheResults = self.getSafeText("cacheResults")
-        self.keepConnectionOpen = self.getSafeText("keepConnectionOpen")
-        self.updateMode = self.getSafeText("updateMode")
-        self.retryCount = self.getSafeText("retryCount")
-        self.retryInterval = self.getSafeText("retryInterval")
-        self.fetchSize = self.getSafeText("fetchSize")
-        self.encoding = self.getSafeText("encoding")
-        
-class FileReceiverProperties(ConnectorProperties):
-    def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
-
-        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
-        self.pollConnectorProperties = PollConnectorProperties(self.root.find('pollConnectorProperties'))
-        self.scheme = self.getSafeText("scheme")
-        prop = Mapping.schemeProperties(self.root.find('schemeProperties').attrib['class'])
-        
-        self.properties = prop(self.root.find('schemeProperties'))
-        self.host = self.getSafeText("host")
-        self.fileFilter = self.getSafeText("fileFilter")
-        self.regex = self.getSafeText("regex")
-        self.directoryRecursion = self.getSafeText("directoryRecursion")
-        self.ignoreDot = self.getSafeText("ignoreDot")
-        self.anonymous = self.getSafeText("anonymous")
-        self.username = self.getSafeText("username")
-        self.password = self.getSafeText("password")
-        self.timeout = self.getSafeText("timeout")
-        self.secure = self.getSafeText("secure")
-        self.passive = self.getSafeText("passive")
-        self.validateConnection = self.getSafeText("validateConnection")
-        self.afterProcessingAction = self.getSafeText("afterProcessingAction")
-        self.moveToDirectory = self.getSafeText("moveToDirectory")
-        self.moveToFileName = self.getSafeText("moveToFileName")
-        self.errprReadingAction = self.getSafeText("errprReadingAction")
-        self.errorResponseAction = self.getSafeText("errorResponseAction")
-        self.errorMoveToDirectory = self.getSafeText("errorMoveToDirectory")
-        self.errorMoveToFileName = self.getSafeText("errorMoveToFileName")
-        self.checkFileAge = self.getSafeText("checkFileAge")
-        self.fileAge = self.getSafeText("fileAge")
-        self.fileSizeMinimum = self.getSafeText("fileSizeMinimum")
-        self.fileSizeMaximum = self.getSafeText("fileSizeMaximum")
-        self.ignoreFileSizeMaximum = self.getSafeText("ignoreFileSizeMaximum")
-        self.sortBy = self.getSafeText("sortBy")
-        self.binary = self.getSafeText("binary")
-        self.charsetEncoding = self.getSafeText("charsetEncoding")
-        
      
 
 class SourceConnectorProperties(MirthElement):
@@ -193,72 +91,4 @@ class PollConnectorPropertiesAdvanced(MirthElement):
             self.inactiveDays.append(e.text)
 
 
-class SchemeProperties(MirthElement):
-    def __init__(self, uXml):
-        MirthElement.__init__(self, uXml)
 
-class SftpSchemeProperties(SchemeProperties):
-    def __init__(self, uXml):
-        SchemeProperties.__init__(self, uXml)
-
-        self.passwordAuth = self.getSafeText('passwordAuth')
-        self.keyAuth = self.getSafeText('keyAuth')
-        self.keyFile = self.getSafeText('keyFile')
-        self.passPhrase = self.getSafeText('passPhrase')
-        self.hostKeyChecking = self.getSafeText('hostKeyChecking')
-        self.knownHostsFile = self.getSafeText('knownHostsFile')
-        self.configurationSettings = []
-
-        for e in self.root.findall('./configurationSettings/entry'):
-            strings = e.findall('./string')
-            self.configurationSettings.append((strings[0].text, strings[1].text))
-        
-class FTPSchemeProperties(SchemeProperties):
-    def __init__(self, uXml):
-        SchemeProperties.__init__(self, uXml)
-
-        self.initalCommands = []
-
-        for e in self.root.findall('./initialCommands/string'):
-            self.initalCommands.append(e.text)
-        
-class S3SchemeProperties(SchemeProperties):
-    def __init__(self, uXml):
-        SchemeProperties.__init__(self, uXml)
-
-        self.useDefaultCredentialProviderChain = self.getSafeText('useDefaultCredentialProviderChain')
-        self.useTemporaryCredentials = self.getSafeText('useTemporaryCredentials')
-        self.duration = self.getSafeText('useTemporaryCredentials')
-        self.region = self.getSafeText('useTemporaryCredentials')
-        self.customerHeaders = []   # TODO: implement
-
-class SmbSchemeProperties(SchemeProperties):
-    def __init__(self, uXml):
-        SchemeProperties.__init__(self, uXml)
-
-        self.smbMinVersion = self.getSafeText('smbMinVersion')
-        self.smbMaxVersion = self.getSafeText('smbMaxVersion')
-
-
-class Mapping():   
-    def recieverProperties(c: str) -> Type:
-        if c == "com.mirth.connect.connectors.vm.VmReceiverProperties":
-            return VmReceiverProperties
-        elif c == "com.mirth.connect.connectors.dimse.DICOMReceiverProperties":
-            return DICOMReceiverProperties
-        elif c == "com.mirth.connect.connectors.jdbc.DatabaseReceiverProperties":
-            return DatabaseReceiverProperties
-        elif c == "com.mirth.connect.connectors.file.FileReceiverProperties":
-            return FileReceiverProperties
-        else:
-            return ConnectorProperties
-    
-    def schemeProperties(c: str) -> Type:
-        if c == "com.mirth.connect.connectors.file.SftpSchemeProperties":
-            return SftpSchemeProperties
-        elif c == "com.mirth.connect.connectors.file.FTPSchemeProperties":
-            return FTPSchemeProperties
-        elif c == "com.mirth.connect.connectors.file.S3SchemeProperties":
-            return S3SchemeProperties    
-        elif c == "com.mirth.connect.connectors.file.SmbSchemeProperties":
-            return SmbSchemeProperties
