@@ -87,7 +87,7 @@ class PollConnectorPropertiesAdvanced(MirthElement):
             self.inactiveDays.append(e.text)
 
 
-#region ReceiverProperties
+#region ReceiverProperties (SourceConnectorTypes)
 class VmReceiverProperties(ConnectorProperties):
     def __init__(self, uXml):
         ConnectorPluginProperties.__init__(self, uXml)
@@ -160,7 +160,7 @@ class FileReceiverProperties(ConnectorProperties):
         self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
         self.pollConnectorProperties = PollConnectorProperties(self.root.find('pollConnectorProperties'))
         self.scheme = self.getSafeText("scheme")
-        prop = schemeProperties(self.root.find('schemeProperties').attrib['class'])
+        prop = Mapping.schemeProperties(self.root.find('schemeProperties').attrib['class'])
         
         self.properties = prop(self.root.find('schemeProperties'))
         self.host = self.getSafeText("host")
@@ -199,7 +199,7 @@ class HttpReceiverProperties(MirthElement):
 
         if len(self.root.find('./pluginProperties').findall('./*')) > 0:
             for e in self.root.find('./pluginProperties').findall('./*'):
-                prop = httpAuthProperties(e.tag)
+                prop = Mapping.httpAuthProperties(e.tag)
         
                 self.pluginProperties.append(prop(e))
 
@@ -219,6 +219,91 @@ class HttpReceiverProperties(MirthElement):
         self.charset = self.getSafeText('charset')
         self.contextPath = self.getSafeText('contextPath')
         self.staticResources = '' #TODO: Implement
+
+class JmsReceiverProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.pluginProperties = []
+        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
+        self.useJndi = self.getSafeText('useJndi')
+        self.jndiProviderUrl = self.getSafeText('jndiProviderUrl')
+        self.jndiInitialContextFactory = self.getSafeText('jndiInitialContextFactory')
+        self.jndiConnectionFactoryName = self.getSafeText('jndiConnectionFactoryName')
+        self.connectionFactoryClass = self.getSafeText('connectionFactoryClass')
+        self.username = self.getSafeText('username')
+        self.password = self.getSafeText('password')
+        self.destinationName = self.getSafeText('destinationName')
+        self.topic = self.getSafeText('topic')
+        self.clientId = self.getSafeText('clientId')
+        self.selector = self.getSafeText('selector')
+        self.reconnectIntervalMillis = self.getSafeText('reconnectIntervalMillis')
+        self.durableTopic = self.getSafeText('durableTopic')
+
+        self.connectionProperties = []
+        for e in self.root.findall('./connectionProperties/entry'):
+            strings = e.findall('./string')
+            self.connectionProperties.append((strings[0].text, strings[1].text))
+
+class JavaScriptReceiverProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.pluginProperties = []
+        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
+        self.pollConnectorProperties = PollConnectorProperties(self.root.find('pollConnectorProperties'))
+
+        self.script = self.getSafeText('script')
+
+class TcpReceiverProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.pluginProperties = []
+        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
+        self.listenerConnectorProperties = ListenerConnectorProperties(self.root.find('listenerConnectorProperties'))
+        
+        prop = Mapping.modeProperties(self.root.find('transmissionModeProperties').attrib['class'])
+        self.transmissionModeProperties = prop(self.root.find('transmissionModeProperties'))
+
+        self.serverMode = self.getSafeText('serverMode')
+        self.remoteAddress = self.getSafeText('remoteAddress')
+        self.remotePort = self.getSafeText('remotePort')
+        self.overrideLocalBinding = self.getSafeText('overrideLocalBinding')
+        self.reconnectInterval = self.getSafeText('reconnectInterval')
+        self.receiveTimeout = self.getSafeText('receiveTimeout')
+        self.bufferSize = self.getSafeText('bufferSize')
+        self.maxConnections = self.getSafeText('maxConnections')
+        self.keepConnectionOpen = self.getSafeText('keepConnectionOpen')
+        self.dataTypeBinary = self.getSafeText('dataTypeBinary')
+        self.charsetEncoding = self.getSafeText('charsetEncoding')
+        self.respondOnNewConnection = self.getSafeText('respondOnNewConnection')
+        self.responseAddress = self.getSafeText('responseAddress')
+        self.responsePort = self.getSafeText('responsePort')
+
+class WebServiceReceiverProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.pluginProperties = []
+
+        if len(self.root.find('./pluginProperties').findall('./*')) > 0:
+            for e in self.root.find('./pluginProperties').findall('./*'):
+                prop = Mapping.httpAuthProperties(e.tag)
+        
+                self.pluginProperties.append(prop(e))
+
+        self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
+        self.listenerConnectorProperties = ListenerConnectorProperties(self.root.find('listenerConnectorProperties'))
+        
+        self.className = self.getSafeText('className')
+        self.serviceName = self.getSafeText('serviceName')
+        self.soapBinding = self.getSafeText('soapBinding')
+        
+
+#endregion
+
+#region Filters
 #endregion
 
 #region HttpAuthProperties
@@ -330,6 +415,28 @@ class SmbSchemeProperties(SchemeProperties):
         self.smbMaxVersion = self.getSafeText('smbMaxVersion')
 #endregion
 
+#region ModeProperties
+class MLLPModeProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.pluginPointName = self.getSafeText('pluginPointName')
+        self.startOfMessageBytes = self.getSafeText('startOfMessageBytes')
+        self.endOfMessageBytes = self.getSafeText('endOfMessageBytes')
+        self.useMLLPv2 = self.getSafeText('useMLLPv2')
+        self.ackBytes = self.getSafeText('ackBytes')
+        self.nackBytes = self.getSafeText('nackBytes')
+        self.maxRetries = self.getSafeText('maxRetries')
+
+class FrameModeProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.pluginPointName = self.getSafeText('pluginPointName')
+        self.startOfMessageBytes = self.getSafeText('startOfMessageBytes')
+        self.endOfMessageBytes = self.getSafeText('endOfMessageBytes')
+#endregion
+
 #region Mapping
 class Mapping():   
     def recieverProperties(c: str) -> Type:
@@ -343,6 +450,16 @@ class Mapping():
             return FileReceiverProperties
         elif c == "com.mirth.connect.connectors.http.HttpReceiverProperties":
             return HttpReceiverProperties
+        elif c == "com.mirth.connect.connectors.jms.JmsReceiverProperties":
+            return JmsReceiverProperties
+        elif c == "com.mirth.connect.connectors.js.JavaScriptReceiverProperties":
+            return JavaScriptReceiverProperties
+        elif c == "com.mirth.connect.connectors.tcp.TcpReceiverProperties":
+            return TcpReceiverProperties
+        elif c == "com.mirth.connect.connectors.ws.WebServiceReceiverProperties":
+            return WebServiceReceiverProperties
+        else:
+            return ConnectorProperties
     
     def schemeProperties(c: str) -> Type:
         if c == "com.mirth.connect.connectors.file.SftpSchemeProperties":
@@ -365,5 +482,11 @@ class Mapping():
             return CustomHttpAuthProperties
         elif c == "com.mirth.connect.plugins.httpauth.oauth2.OAuth2HttpAuthProperties":
             return OAuth2HttpAuthProperties
+    
+    def modeProperties(c: str) -> Type:
+        if c == "com.mirth.connect.plugins.mllpmode.MLLPModeProperties":
+            return MLLPModeProperties
+        elif c == "com.mirth.connect.model.transmission.framemode.FrameModeProperties":
+            return FrameModeProperties
 
 #endregion
