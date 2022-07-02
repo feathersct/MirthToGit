@@ -1,4 +1,4 @@
-from models.channels.connector import Connector
+from models.channels.connectors import Connector
 from models.mirthElement import MirthElement
 
 

@@ -30,7 +30,7 @@ def checkForChanges(end_date):
     service = MirthService(config)
     service.open()
 
-    c = service.getChannels({"channelId":"f63dc102-ae98-44ed-80ba-7f5da1793880"})  
+    c = service.getChannels({"channelId":"540e83f3-0c68-45f1-8e43-fbe8922577b4"})  
     
 
     # Set Dates to query for events
