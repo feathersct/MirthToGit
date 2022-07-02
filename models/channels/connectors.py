@@ -1,4 +1,5 @@
 from typing import Type
+from models.channels.filters import Filter
 from models.mirthElement import MirthElement
 
 class Connector(MirthElement):
@@ -15,6 +16,7 @@ class Connector(MirthElement):
         prop = Mapping.recieverProperties(self.root.find('properties').attrib['class'])
         
         self.properties = prop(self.root.find('properties'))
+        self.filter = Filter(self.root.find('filter'))
 
 class ConnectorProperties(MirthElement):
     def __init__(self, uXml):
@@ -90,13 +92,13 @@ class PollConnectorPropertiesAdvanced(MirthElement):
 #region ReceiverProperties (SourceConnectorTypes)
 class VmReceiverProperties(ConnectorProperties):
     def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
+        ConnectorProperties.__init__(self, uXml)
 
         self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
 
 class DICOMReceiverProperties(ConnectorProperties):
     def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
+        ConnectorProperties.__init__(self, uXml)
 
         self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
         self.listenerConnectorProperties = ListenerConnectorProperties(self.root.find('listenerConnectorProperties'))
@@ -133,7 +135,7 @@ class DICOMReceiverProperties(ConnectorProperties):
 
 class DatabaseReceiverProperties(ConnectorProperties):
     def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
+        ConnectorProperties.__init__(self, uXml)
 
         self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
         self.pollConnectorProperties = PollConnectorProperties(self.root.find('pollConnectorProperties'))
@@ -155,7 +157,7 @@ class DatabaseReceiverProperties(ConnectorProperties):
         
 class FileReceiverProperties(ConnectorProperties):
     def __init__(self, uXml):
-        ConnectorPluginProperties.__init__(self, uXml)
+        ConnectorProperties.__init__(self, uXml)
 
         self.sourceConnectorProperties = SourceConnectorProperties(self.root.find('sourceConnectorProperties'))
         self.pollConnectorProperties = PollConnectorProperties(self.root.find('pollConnectorProperties'))
@@ -301,9 +303,6 @@ class WebServiceReceiverProperties(MirthElement):
         self.soapBinding = self.getSafeText('soapBinding')
         
 
-#endregion
-
-#region Filters
 #endregion
 
 #region HttpAuthProperties
