@@ -1,6 +1,7 @@
 from calendar import c
 from fileinput import filename
 import string
+from types import NoneType
 from xml.etree import ElementTree
 import requests
 import colorama
@@ -32,7 +33,7 @@ def checkForChanges(end_date):
 
     c = service.getChannels({"channelId":"79faccb9-aafe-4bb2-a5f4-4be6ddccbf61"})  
     
-
+    
     # Set Dates to query for events
     if end_date is None:
         start_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000−0400")

@@ -1,5 +1,6 @@
 from typing import Type
 from models.channels.filters import Filter
+from models.channels.transformers import Transformer
 from models.mirthElement import MirthElement
 
 class Connector(MirthElement):
@@ -17,6 +18,7 @@ class Connector(MirthElement):
         
         self.properties = prop(self.root.find('properties'))
         self.filter = Filter(self.root.find('filter'))
+        self.transformer = Transformer(self.root.find('transformer'))
 
 class ConnectorProperties(MirthElement):
     def __init__(self, uXml):
