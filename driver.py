@@ -32,7 +32,8 @@ def checkForChanges(end_date):
     service.open()
 
     c = service.getChannels({"channelId":"79faccb9-aafe-4bb2-a5f4-4be6ddccbf61"})  
-    
+    channelXml = c.channels[0].getXML()
+    #createXML(c.channels[0].getXML())
     
     # Set Dates to query for events
     if end_date is None:
@@ -149,6 +150,56 @@ def pushToGit(file_list, changeEvents):
     parent = repo.get_git_commit(master_sha)
     commit = repo.create_git_commit(commit_message, tree, [parent])
     master_ref.edit(commit.sha)   
+
+def createXML(o):
+    if type(o) == tuple:
+        for t in o:
+            print(f'<string>{t}</string>')
+        return
+    elif type(o) in [str]:
+        print(f'{o}')
+        return
+    elif type(o) in [NoneType]:
+        print(f'')
+        return
+    elif type(o) == ElementTree.Element:
+        print(ElementTree.tostring(o, method='xml').decode().replace('\n', ''))
+        return
+
+    variables = vars(o)
+    keys = [key for key, value in variables.items() if key not in ['root']]
+
+    for k in keys:
+        if type(variables[k]) in [str]:
+            print(f'<{k}>{variables[k]}</{k}>')
+        elif type(variables[k]) in [NoneType]:
+            print(f'<{k}></{k}>')
+        elif type(variables[k]) == ElementTree.Element:
+            print(ElementTree.tostring(variables[k], method='xml').decode().replace('\n', ''))
+        elif type(variables[k]) == list:
+            #TODO: implement list functionality
+            for x in variables[k]:
+                print(f'<{k}>')
+                createXML(x)
+                print(f'</{k}>')
+        else:
+            print(f'<{k}>')
+            createXML(variables[k])
+
+            # variables2 = vars(variables[k])
+            # keys2 = [key for key, value in variables2.items() if key not in ['root']]
+            # for k2 in keys2:
+            #     if type(variables2[k2]) in [str, NoneType]:
+            #        print(f'\t<{k2}>{variables2[k2]}</{k2}>')
+            #     elif type(variables2[k2]) == ElementTree.Element:
+            #         print(ElementTree.tostring(variables2[k2], method='xml').decode().replace('\n', ''))
+            #     else:
+            #         variables3 = vars(variables2[k2])
+
+            print(f'</{k}>')
+            
+
+    #keys = [key for key, value in vars(c.channels[0]).items() if key not in ['root']] #get all variables except for root
 
 
 # driver
