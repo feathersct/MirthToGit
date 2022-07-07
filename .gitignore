@@ -1,3 +1,8 @@
 config.json
 files/Channels/*
 files/CodeTemplates/*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
