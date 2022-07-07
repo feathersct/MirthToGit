@@ -1,5 +1,6 @@
 from typing import Type
 from models.channels.filters import Filter
+from models.channels.linkedHashMap import LinkedHashMap
 from models.channels.transformers import Transformer
 from models.mirthElement import MirthElement
 
@@ -9,27 +10,28 @@ class Connector(MirthElement):
         
         self.metaDataId = self.getSafeText('metaDataId')
         self.name = self.getSafeText('name')
+
+        prop = Mapping.recieverProperties(self.root.find('properties').attrib['class'])
+        
+        self.properties = prop(self.root.find('properties'))
+        self.transformer = Transformer(self.root.find('transformer'))
+        self.filter = Filter(self.root.find('filter'))
+
         self.transportName = self.getSafeText('transportName')
         self.mode = self.getSafeText('mode')
         self.enabled = self.getSafeText('enabled')
         self.waitForPrevious = self.getSafeText('waitForPrevious')
 
-        prop = Mapping.recieverProperties(self.root.find('properties').attrib['class'])
-        
-        self.properties = prop(self.root.find('properties'))
-        self.filter = Filter(self.root.find('filter'))
-        self.transformer = Transformer(self.root.find('transformer'))
-
 class ConnectorProperties(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
         
-        self.protocol = self.getSafeText('protocol')
-        self.name = self.getSafeText('name')
-        self.pluginProperties = [ConnectorPluginProperties]
+        #self.protocol = self.getSafeText('protocol') #TODO: get rid of this, not every property has this
+        #self.name = self.getSafeText('name')         #TODO: get rid of this, not every property has this
+        self.pluginProperties = []
 
-        for e in self.root.findall('./pluginProperties'):
-            self.pluginProperties.append(ConnectorPluginProperties(e))
+        # for e in self.root.findall('./pluginProperties'):
+        #     self.pluginProperties.append(ConnectorPluginProperties(e))
 
 class ConnectorPluginProperties(MirthElement):
     def __init__(self, uXml):
@@ -47,12 +49,8 @@ class SourceConnectorProperties(MirthElement):
         self.processBatch = self.getSafeText("processBatch")
         self.firstResponse = self.getSafeText("firstResponse")
         self.processingThreads = self.getSafeText("processingThreads")
+        self.resourceIds = LinkedHashMap(self.root.find('resourceIds'))
         self.queueBufferSize = self.getSafeText("queueBufferSize")
-        self.resourceIds = []
-
-        for e in self.root.findall('./resourceIds/entry'):
-            strings = e.findall('./string')
-            self.resourceIds.append((strings[0].text, strings[1].text))
 
 class ListenerConnectorProperties(MirthElement):
     def __init__(self, uXml):

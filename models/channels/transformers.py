@@ -6,13 +6,13 @@ class Transformer(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
 
-        self.elements = []
+        self.elements = Elements(self.root.find('./elements'))
         
-        if len(self.root.find('./elements').findall('./*')) > 0:
-            for e in self.root.find('./elements').findall('./*'):
-                prop = steps(e.tag)
+        # if len(self.root.find('./elements').findall('./*')) > 0:
+        #     for e in self.root.find('./elements').findall('./*'):
+        #         prop = steps(e.tag)
                 
-                self.elements.append(prop(e))
+        #         self.elements.append(prop(e))
 
         self.inboundDataType = self.getSafeText('inboundDataType')
         self.inboundTemplate = self.root.find('inboundTemplate')    #TODO: IMplement
@@ -21,7 +21,19 @@ class Transformer(MirthElement):
         self.outboundDataType = self.getSafeText('outboundDataType')
         self.outboundTemplate = self.root.find('outboundTemplate')  #TODO: IMplement
         self.outboundProperties = self.root.find('outboundProperties') #TODO: Implement Classes
+
+class Elements(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
+        self.elements = []
         
+        if len(self.root.findall('./*')) > 0:
+            for e in self.root.findall('./*'):
+                prop = steps(e.tag)
+                
+                self.elements.append(prop(e))
+
 class TransformerStep(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
@@ -38,9 +50,15 @@ class DestinationSetFilterStep(TransformerStep):
         self.metaDataIds = self.getSafeText('metaDataIds')
         self.field = self.getSafeText('field')
         self.condition = self.getSafeText('condition')
+        self.values = Values(self.root.find('values'))
+
+class Values(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
         self.values = []
 
-        for e in self.root.findall('./values/string'):
+        for e in self.root.findall('./string'):
             self.values.append(e.text)
 
 class ExternalScriptStep(TransformerStep):
