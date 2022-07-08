@@ -11,7 +11,7 @@ class Connector(MirthElement):
         self.metaDataId = self.getSafeText('metaDataId')
         self.name = self.getSafeText('name')
 
-        prop = Mapping.recieverProperties(self.root.find('properties').attrib['class'])
+        prop = Mapping.connectorProperties(self.root.find('properties').attrib['class'])
         
         self.properties = prop(self.root.find('properties'))
         self.transformer = Transformer(self.root.find('transformer'))
@@ -51,6 +51,11 @@ class SourceConnectorProperties(MirthElement):
         self.processingThreads = self.getSafeText("processingThreads")
         self.resourceIds = LinkedHashMap(self.root.find('resourceIds'))
         self.queueBufferSize = self.getSafeText("queueBufferSize")
+
+class DestinationConnectorProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+
 
 class ListenerConnectorProperties(MirthElement):
     def __init__(self, uXml):
@@ -305,6 +310,34 @@ class WebServiceReceiverProperties(MirthElement):
 
 #endregion
 
+#region DispatcherProperties (DestinationConnectorTypes)
+class JavaScriptDispatcherProperties(ConnectorProperties):
+    def __init__(self, uXml):
+        ConnectorProperties.__init__(self, uXml)
+        self.destinationConnectorProperties = DestinationConnectorProperties(self.root.find('destinationConnectorProperties'))
+        self.script = self.getSafeText('script')
+        
+
+class DestinationConnectorProperties(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+        
+        self.queueEnabled = self.getSafeText('queueEnabled')
+        self.sendFirst = self.getSafeText('sendFirst')
+        self.retryIntervalMillis = self.getSafeText('retryIntervalMillis')
+        self.regenerateTemplate = self.getSafeText('regenerateTemplate')
+        self.retryCount = self.getSafeText('retryCount')
+        self.rotate = self.getSafeText('rotate')
+        self.includeFilterTransformer = self.getSafeText('includeFilterTransformer')
+        self.threadAssignmentVariable = self.getSafeText('threadAssignmentVariable')
+        self.validateResponse = self.getSafeText('validateResponse')
+        self.resourceIds = LinkedHashMap(self.root.find('resourceIds'))
+        self.queueBufferSize = self.getSafeText('queueBufferSize')
+        self.reattachAttachments = self.getSafeText('reattachAttachments')
+
+
+#endregion
+
 #region HttpAuthProperties
 class BasicHttpAuthProperties(MirthElement):
     def __init__(self, uXml):
@@ -438,7 +471,7 @@ class FrameModeProperties(MirthElement):
 
 #region Mapping
 class Mapping():   
-    def recieverProperties(c: str) -> Type:
+    def connectorProperties(c: str) -> Type:
         if c == "com.mirth.connect.connectors.vm.VmReceiverProperties":
             return VmReceiverProperties
         elif c == "com.mirth.connect.connectors.dimse.DICOMReceiverProperties":
@@ -457,6 +490,8 @@ class Mapping():
             return TcpReceiverProperties
         elif c == "com.mirth.connect.connectors.ws.WebServiceReceiverProperties":
             return WebServiceReceiverProperties
+        elif c == "com.mirth.connect.connectors.js.JavaScriptDispatcherProperties":
+            return JavaScriptDispatcherProperties
         else:
             return ConnectorProperties
     

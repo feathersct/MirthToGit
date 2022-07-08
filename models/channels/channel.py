@@ -21,4 +21,4 @@ class Channel(MirthElement):
         self.properties = self.root.find('properties')
 
         for c in self.root.findall('./destinationConnectors/connector'):
-            self.destinationConnectors.append(c)
+            self.destinationConnectors.append(Connector(c))
