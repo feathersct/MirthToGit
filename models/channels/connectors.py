@@ -25,20 +25,19 @@ class Connector(MirthElement):
 class ConnectorProperties(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
+
+        # for e in self.root.findall('./pluginProperties'):
+        #     self.pluginProperties.append(ConnectorPluginProperties(e))
         
         #self.protocol = self.getSafeText('protocol') #TODO: get rid of this, not every property has this
         #self.name = self.getSafeText('name')         #TODO: get rid of this, not every property has this
         self.pluginProperties = []
-
-        # for e in self.root.findall('./pluginProperties'):
-        #     self.pluginProperties.append(ConnectorPluginProperties(e))
 
 class ConnectorPluginProperties(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
     
         self.name = self.getSafeText('name')
-     
 
 class SourceConnectorProperties(MirthElement):
     def __init__(self, uXml):
@@ -55,7 +54,6 @@ class SourceConnectorProperties(MirthElement):
 class DestinationConnectorProperties(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
-
 
 class ListenerConnectorProperties(MirthElement):
     def __init__(self, uXml):
@@ -311,12 +309,97 @@ class WebServiceReceiverProperties(MirthElement):
 #endregion
 
 #region DispatcherProperties (DestinationConnectorTypes)
-class JavaScriptDispatcherProperties(ConnectorProperties):
+class DestinationConnector(ConnectorProperties):
     def __init__(self, uXml):
         ConnectorProperties.__init__(self, uXml)
+        pluginProperties = []
         self.destinationConnectorProperties = DestinationConnectorProperties(self.root.find('destinationConnectorProperties'))
+
+class JavaScriptDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
         self.script = self.getSafeText('script')
-        
+
+class DICOMDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+        self.host = self.getSafeText('host')
+        self.port = self.getSafeText('port')
+        self.applicationEntity = self.getSafeText('applicationEntity')
+        self.localHost = self.getSafeText('localHost')
+        self.localPort = self.getSafeText('localPort')
+        self.localApplicationEntity = self.getSafeText('localApplicationEntity')
+        self.template = self.getSafeText('template')
+        self.acceptTo = self.getSafeText('acceptTo')
+        self.asyncS = self.getSafeText('async') #TODO: this will mess with xml generation. figure a way to put async
+        self.bufSize = self.getSafeText('bufSize')
+        self.connectTo = self.getSafeText('connectTo')
+        self.priority = self.getSafeText('priority')
+        self.passcode = self.getSafeText('passcode')
+        self.pdv1 = self.getSafeText('pdv1')
+        self.rcvpdulen = self.getSafeText('rcvpdulen')
+        self.reaper = self.getSafeText('reaper')
+        self.releaseTo = self.getSafeText('releaseTo')
+        self.rspTo = self.getSafeText('rspTo')
+        self.shutdownDelay = self.getSafeText('shutdownDelay')
+        self.sndpdulen = self.getSafeText('sndpdulen')
+        self.soCloseDelay = self.getSafeText('soCloseDelay')
+        self.sorcvbuf = self.getSafeText('sorcvbuf')
+        self.sosndbuf = self.getSafeText('sosndbuf')
+        self.stgcmt = self.getSafeText('stgcmt')
+        self.tcpDelay = self.getSafeText('tcpDelay')
+        self.ts1 = self.getSafeText('ts1')
+        self.uidnegrsp = self.getSafeText('uidnegrsp')
+        self.username = self.getSafeText('username')
+        self.keyPW = self.getSafeText('keyPW')
+        self.keyStore = self.getSafeText('keyStore')
+        self.keyStorePW = self.getSafeText('keyStorePW')
+        self.noClientAuth = self.getSafeText('noClientAuth')
+        self.nossl2 = self.getSafeText('nossl2')
+        self.tls = self.getSafeText('tls')
+        self.trustStore = self.getSafeText('trustStore')
+        self.trustStorePW = self.getSafeText('trustStorePW')
+
+class WebServiceDispatcherProperties(ConnectorProperties):
+    def __init__(self, uXml):
+        ConnectorProperties.__init__(self, uXml)
+        self.wsdlUrl = self.getSafeText('wsdlUrl')
+        self.service = self.getSafeText('service')
+        self.port = self.getSafeText('port')
+        self.operation = self.getSafeText('operation')
+        self.locationURI = self.getSafeText('locationURI')
+        self.socketTimeout = self.getSafeText('socketTimeout')
+        self.useAuthentication = self.getSafeText('useAuthentication')
+        self.username = self.getSafeText('username')
+        self.password = self.getSafeText('password')
+        self.envelope = self.getSafeText('envelope')
+        self.oneWay = self.getSafeText('oneWay')
+        self.headers = ''#TODO: Implement
+        self.headersVariable = self.getSafeText('headersVariable')
+        self.isUseHeadersVariable = self.getSafeText('isUseHeadersVariable')
+        self.useMtom = self.getSafeText('useMtom')
+        self.attachmentNames = []
+        self.attachmentContents = []
+        self.attachmentTypes = []
+        self.attachmentsVariable = self.getSafeText('attachmentsVariable')
+        self.isUseAttachmentsVariable = self.getSafeText('isUseAttachmentsVariable')
+        self.soapAction = self.getSafeText('soapAction')
+        self.wsdlDefinitionMap = Map(self.root.find('wsdlDefinitionMap'))
+
+class Map(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+        self.map = LinkedHashMap(self.root.find('map'))
+
+class VmDispatcherProperties(ConnectorProperties):
+    def __init__(self, uXml):
+        ConnectorProperties.__init__(self, uXml)
+        self.channelId = self.getSafeText('channelId')
+        self.channelTemplate = self.getSafeText('channelTemplate')
+        self.mapVariables = []
+
+        for e in self.root.findall('./mapVariables/string'):
+            self.mapVariables.append(e.text)
 
 class DestinationConnectorProperties(MirthElement):
     def __init__(self, uXml):
@@ -329,6 +412,7 @@ class DestinationConnectorProperties(MirthElement):
         self.retryCount = self.getSafeText('retryCount')
         self.rotate = self.getSafeText('rotate')
         self.includeFilterTransformer = self.getSafeText('includeFilterTransformer')
+        self.threadCount = self.getSafeText('threadCount')
         self.threadAssignmentVariable = self.getSafeText('threadAssignmentVariable')
         self.validateResponse = self.getSafeText('validateResponse')
         self.resourceIds = LinkedHashMap(self.root.find('resourceIds'))
@@ -492,6 +576,10 @@ class Mapping():
             return WebServiceReceiverProperties
         elif c == "com.mirth.connect.connectors.js.JavaScriptDispatcherProperties":
             return JavaScriptDispatcherProperties
+        elif c == "com.mirth.connect.connectors.vm.VmDispatcherProperties":
+            return VmDispatcherProperties
+        elif c == "com.mirth.connect.connectors.dimse.DICOMDispatcherProperties":
+            return DICOMDispatcherProperties
         else:
             return ConnectorProperties
     
