@@ -315,6 +315,16 @@ class DestinationConnector(ConnectorProperties):
         pluginProperties = []
         self.destinationConnectorProperties = DestinationConnectorProperties(self.root.find('destinationConnectorProperties'))
 
+class VmDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+        self.channelId = self.getSafeText('channelId')
+        self.channelTemplate = self.getSafeText('channelTemplate')
+        self.mapVariables = []
+
+        for e in self.root.findall('./mapVariables/string'):
+            self.mapVariables.append(e.text)
+
 class JavaScriptDispatcherProperties(DestinationConnector):
     def __init__(self, uXml):
         DestinationConnector.__init__(self, uXml)
@@ -360,9 +370,9 @@ class DICOMDispatcherProperties(DestinationConnector):
         self.trustStore = self.getSafeText('trustStore')
         self.trustStorePW = self.getSafeText('trustStorePW')
 
-class WebServiceDispatcherProperties(ConnectorProperties):
+class WebServiceDispatcherProperties(DestinationConnector):
     def __init__(self, uXml):
-        ConnectorProperties.__init__(self, uXml)
+        DestinationConnector.__init__(self, uXml)
         self.wsdlUrl = self.getSafeText('wsdlUrl')
         self.service = self.getSafeText('service')
         self.port = self.getSafeText('port')
@@ -374,7 +384,7 @@ class WebServiceDispatcherProperties(ConnectorProperties):
         self.password = self.getSafeText('password')
         self.envelope = self.getSafeText('envelope')
         self.oneWay = self.getSafeText('oneWay')
-        self.headers = ''#TODO: Implement
+        self.headers = LinkedHashMap(self.root.find('headers'))
         self.headersVariable = self.getSafeText('headersVariable')
         self.isUseHeadersVariable = self.getSafeText('isUseHeadersVariable')
         self.useMtom = self.getSafeText('useMtom')
@@ -386,20 +396,183 @@ class WebServiceDispatcherProperties(ConnectorProperties):
         self.soapAction = self.getSafeText('soapAction')
         self.wsdlDefinitionMap = Map(self.root.find('wsdlDefinitionMap'))
 
+        for e in self.root.findall('./attachmentNames/string'):
+            self.attachmentNames.append(e.text)
+
+        for e in self.root.findall('./attachmentContents/string'):
+            self.attachmentContents.append(e.text)
+
+        for e in self.root.findall('./attachmentTypes/string'):
+            self.attachmentTypes.append(e.text)
+
+class TcpDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+        
+        prop = Mapping.modeProperties(self.root.find('transmissionModeProperties').attrib['class'])
+        self.transmissionModeProperties = prop(self.root.find('transmissionModeProperties'))
+        
+        self.serverMode = self.getSafeText('serverMode')
+        self.remoteAddress = self.getSafeText('remoteAddress')
+        self.remotePort = self.getSafeText('remotePort')
+        self.overrideLocalBinding = self.getSafeText('overrideLocalBinding')
+        self.localAddress = self.getSafeText('localAddress')
+        self.localPort = self.getSafeText('localPort')
+        self.sendTimeout = self.getSafeText('sendTimeout')
+        self.bufferSize = self.getSafeText('bufferSize')
+        self.maxConnections = self.getSafeText('maxConnections')
+        self.keepConnectionOpen = self.getSafeText('keepConnectionOpen')
+        self.checkRemoteHost = self.getSafeText('checkRemoteHost')
+        self.responseTimeout = self.getSafeText('responseTimeout')
+        self.ignoreResponse = self.getSafeText('ignoreResponse')
+        self.queueOnResponseTimeout = self.getSafeText('queueOnResponseTimeout')
+        self.dataTypeBinary = self.getSafeText('dataTypeBinary')
+        self.charsetEncoding = self.getSafeText('charsetEncoding')
+        self.template = self.getSafeText('template')
+
+class SmtpDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+
+        self.smtpHost = self.getSafeText('smtpHost')
+        self.smtpPort = self.getSafeText('smtpPort')
+        self.overrideLocalBinding = self.getSafeText('overrideLocalBinding')
+        self.localAddress = self.getSafeText('localAddress')
+        self.localPort = self.getSafeText('localPort')
+        self.timeout = self.getSafeText('timeout')
+        self.encryption = self.getSafeText('encryption')
+        self.authentication = self.getSafeText('remoteAdauthenticationdress')
+        self.username = self.getSafeText('username')
+        self.password = self.getSafeText('password')
+        self.to = self.getSafeText('to')
+        self.fromS = self.getSafeText('from')
+        self.cc = self.getSafeText('cc')
+        self.bcc = self.getSafeText('bcc')
+        self.replyTo = self.getSafeText('replyTo')
+        self.headers = LinkedHashMap(self.root.find('headers'))
+        self.headersVariable = self.getSafeText('headersVariable')
+        self.isUseHeadersVariable = self.getSafeText('isUseHeadersVariable')
+        self.subject = self.getSafeText('subject')
+        self.charsetEncoding = self.getSafeText('charsetEncoding')
+        self.html = self.getSafeText('html')
+        self.body = self.getSafeText('body')
+        self.attachments = [] 
+
+        for e in self.root.findall('com.mirth.connect.connectors.smtp.Attachment'):
+            self.attachments.append(SMTPAttachment(e))
+
+        self.attachmentsVariable = self.getSafeText('attachmentsVariable')
+        self.isUseAttachmentsVariable = self.getSafeText('isUseAttachmentsVariable')
+
+class JmsDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+
+        self.useJndi = self.getSafeText('useJndi')
+        self.jndiProviderUrl = self.getSafeText('jndiProviderUrl')
+        self.jndiInitialContextFactory = self.getSafeText('jndiInitialContextFactory')
+        self.jndiConnectionFactoryName = self.getSafeText('jndiConnectionFactoryName')
+        self.connectionFactoryClass = self.getSafeText('connectionFactoryClass')
+        self.connectionProperties = LinkedHashMap(self.root.find('connectionProperties'))
+        self.username = self.getSafeText('username')
+        self.password = self.getSafeText('password')
+        self.destinationName = self.getSafeText('destinationName')
+        self.topic = self.getSafeText('topic')
+        self.clientId = self.getSafeText('clientId')
+        self.template = self.getSafeText('template')
+
+class HttpDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+
+        self.host = self.getSafeText('host')
+        self.useProxyServer = self.getSafeText('useProxyServer')
+        self.proxyAddress = self.getSafeText('proxyAddress')
+        self.proxyPort = self.getSafeText('proxyPort')
+        self.method = self.getSafeText('method')
+        self.headers = LinkedHashMap(self.root.find('headers'))
+        self.parameters = LinkedHashMap(self.root.find('parameters'))
+        self.useHeadersVariable = self.getSafeText('useHeadersVariable')
+        self.headersVariable = self.getSafeText('headersVariable')
+        self.useParametersVariable = self.getSafeText('useParametersVariable')
+        self.parametersVariable = self.getSafeText('parametersVariable')
+        self.responseXmlBody = self.getSafeText('responseXmlBody')
+        self.responseParseMultipart = self.getSafeText('responseParseMultipart')
+        self.responseIncludeMetadata = self.getSafeText('responseIncludeMetadata')
+        self.responseBinaryMimeTypes = self.getSafeText('responseBinaryMimeTypes')
+        self.responseBinaryMimeTypesRegex = self.getSafeText('responseBinaryMimeTypesRegex')
+        self.multipart = self.getSafeText('multipart')
+        self.useAuthentication = self.getSafeText('useAuthentication')
+        self.authenticationType = self.getSafeText('authenticationType')
+        self.usePreemptiveAuthentication = self.getSafeText('usePreemptiveAuthentication')
+        self.username = self.getSafeText('username')
+        self.password = self.getSafeText('password')
+        self.content = self.getSafeText('content')
+        self.contentType = self.getSafeText('contentType')
+        self.dataTypeBinary = self.getSafeText('dataTypeBinary')
+        self.charset = self.getSafeText('charset')
+        self.socketTimeout = self.getSafeText('socketTimeout')        
+
+class FileDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+
+        self.scheme = self.getSafeText('scheme')
+        self.host = self.getSafeText('host')
+        self.outputPattern = self.getSafeText('outputPattern')
+        self.anonymous = self.getSafeText('anonymous')
+        self.username = self.getSafeText('username')
+        self.password = self.getSafeText('password')
+        self.timeout = self.getSafeText('timeout')
+        self.keepConnectionOpen = self.getSafeText('keepConnectionOpen')
+        self.maxIdleTime = self.getSafeText('maxIdleTime')
+        self.secure = self.getSafeText('secure')
+        self.passive = self.getSafeText('passive')
+        self.validateConnection = self.getSafeText('validateConnection')
+        self.outputAppend = self.getSafeText('outputAppend')
+        self.errorOnExists = self.getSafeText('errorOnExists')
+        self.temporary = self.getSafeText('temporary')
+        self.binary = self.getSafeText('binary')
+        self.charsetEncoding = self.getSafeText('charsetEncoding')
+        self.template = self.getSafeText('template')
+
+class DocumentDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+
+        self.host = self.getSafeText('host')
+        self.outputPattern = self.getSafeText('outputPattern')
+        self.documentType = self.getSafeText('documentType')
+        self.encrypt = self.getSafeText('encrypt')
+        self.output = self.getSafeText('output')
+        self.password = self.getSafeText('password')
+        self.pageWidth = self.getSafeText('pageWidth')
+        self.pageHeight = self.getSafeText('pageHeight')
+        self.pageUnit = self.getSafeText('pageUnit')
+        self.template = self.getSafeText('template')
+
+class DatabaseDispatcherProperties(DestinationConnector):
+    def __init__(self, uXml):
+        DestinationConnector.__init__(self, uXml)
+
+        self.driver = self.getSafeText('driver')
+        self.url = self.getSafeText('url')
+        self.username = self.getSafeText('username')
+        self.password = self.getSafeText('password')
+        self.query = self.getSafeText('query')
+        self.useScript = self.getSafeText('useScript')
+
+class SMTPAttachment(MirthElement):
+    def __init__(self, uXml):
+        MirthElement.__init__(self, uXml)
+        self.name = self.getSafeText('name')
+        self.content = self.getSafeText('content')
+        self.mimeType = self.getSafeText('mimeType')
+        
 class Map(MirthElement):
     def __init__(self, uXml):
         MirthElement.__init__(self, uXml)
         self.map = LinkedHashMap(self.root.find('map'))
-
-class VmDispatcherProperties(ConnectorProperties):
-    def __init__(self, uXml):
-        ConnectorProperties.__init__(self, uXml)
-        self.channelId = self.getSafeText('channelId')
-        self.channelTemplate = self.getSafeText('channelTemplate')
-        self.mapVariables = []
-
-        for e in self.root.findall('./mapVariables/string'):
-            self.mapVariables.append(e.text)
 
 class DestinationConnectorProperties(MirthElement):
     def __init__(self, uXml):
@@ -580,6 +753,20 @@ class Mapping():
             return VmDispatcherProperties
         elif c == "com.mirth.connect.connectors.dimse.DICOMDispatcherProperties":
             return DICOMDispatcherProperties
+        elif c == "com.mirth.connect.connectors.tcp.TcpDispatcherProperties":
+            return TcpDispatcherProperties
+        elif c == "com.mirth.connect.connectors.smtp.SmtpDispatcherProperties":
+            return SmtpDispatcherProperties
+        elif c == "com.mirth.connect.connectors.jms.JmsDispatcherProperties":
+            return JmsDispatcherProperties
+        elif c == "com.mirth.connect.connectors.http.HttpDispatcherProperties":
+            return HttpDispatcherProperties
+        elif c == "com.mirth.connect.connectors.file.FileDispatcherProperties":
+            return FileDispatcherProperties
+        elif c == "com.mirth.connect.connectors.doc.DocumentDispatcherProperties":
+            return DocumentDispatcherProperties
+        elif c == "com.mirth.connect.connectors.jdbc.DatabaseDispatcherProperties":
+            return DatabaseDispatcherProperties
         else:
             return ConnectorProperties
     
